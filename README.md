@@ -43,12 +43,10 @@ We used test to ensure stability and correctness of features by writing integrat
 
 ## Technology Stack
 
-| Category | Technologies |
-| :--- | :--- |
-| **Backend** | Java, Spring Boot, Spring Security, Salespoint Framework, JPA / Hibernate |
-| **Frontend** | Thymeleaf, Semantic UI, HTML, CSS |
-| **Database** | H2 (for development and testing) |
-| **Testing** | JUnit 5, MockMvc, Spring Boot Test |
+- **Backend:** Java, Spring Boot, Spring Security, Salespoint Framework, JPA / Hibernate 
+- **Frontend:** Thymeleaf, Semantic UI, HTML, CSS 
+- **Database:** H2
+- **Testing:** JUnit 5, MockMvc, Spring Boot Test 
 
 ## Project Context
 
@@ -58,7 +56,7 @@ This project was a collaborative effort developed by a team of four students for
 
 The key files are organized in a simplified directory structure.
 
-* `/src/main/java/pharmacy/checkout/`: Contains the core backend logic for the checkout and backorder process.
-* `/src/main/resources/templates/`: Contains the Thymeleaf HTML templates I designed.
-* `/src/test/java/pharmacy/welcome/`: Contains the integration tests I wrote.
-* `/docs/`: Contains the original documentation for the project.
+* `/src/main/java/pharmacy/checkout/`: Core backend logic for the checkout and backorder process
+* `/src/main/resources/templates/`: Thymeleaf HTML templates I designed
+* `/src/test/java/pharmacy/welcome/`: Integration tests I wrote
+* `/docs/`: The original documentation for the project
