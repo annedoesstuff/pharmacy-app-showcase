@@ -4,15 +4,13 @@ This repo shows my main contributions to a pharmacy management and Point-of-Sale
 
 ## Screenshots
 
-*(Here you can add your screenshots. I recommend showing the dashboard, the checkout interface, and a generated bill/receipt.)*
-
 | Dashboard Overview | Checkout Interface |
 | :---: | :---: |
-| *[Paste Screenshot of dashboard.html here]* | *[Paste Screenshot of checkout.html here]* |
+| *[TODO: Paste Screenshot of dashboard.html here]* | *[TODO: Paste Screenshot of checkout.html here]* |
 
 | Backorder Management | Generated Customer Bill |
 | :---: | :---: |
-| *[Paste Screenshot of backorder-list.html here]* | *[Paste Screenshot of checkout-bill.html here]* |
+| *[TODO: Paste Screenshot of backorder-list.html here]* | *[TODO: Paste Screenshot of checkout-bill.html here]* |
 
 
 ## My Main Contributions
