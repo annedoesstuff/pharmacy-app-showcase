@@ -6,11 +6,11 @@ This repo shows my main contributions to a pharmacy management and Point-of-Sale
 
 | Dashboard Overview | Checkout Interface |
 | :---: | :---: |
-| *[TODO: Paste Screenshot of dashboard.html here]* | *[TODO: Paste Screenshot of checkout.html here]* |
+| ![Screenshot 2025-07-06 120947](https://github.com/user-attachments/assets/4e8a3b08-1b86-4009-96e3-de0f4727e4b7) | ![Screenshot 2025-07-06 121125](https://github.com/user-attachments/assets/706dc570-0052-4484-9e34-03a871f15cc3) |
 
 | Backorder Management | Generated Customer Bill |
 | :---: | :---: |
-| *[TODO: Paste Screenshot of backorder-list.html here]* | *[TODO: Paste Screenshot of checkout-bill.html here]* |
+| ![Screenshot 2025-07-06 121234](https://github.com/user-attachments/assets/b6a01893-bd7b-425e-bcbc-5f8fec1cac7d) | ![Screenshot 2025-07-06 121209](https://github.com/user-attachments/assets/a6e5520f-860d-4f07-9eb2-64463538dfb1) |
 
 
 ## My Main Contributions
