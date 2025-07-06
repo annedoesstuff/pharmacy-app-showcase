@@ -2,6 +2,12 @@
 
 This repo shows my main contributions to a pharmacy management and Point-of-Sale system, developed as part of a university group project. The app has inventory management, a checkout process with prescription handling, backorder management, a lab for making new medication and various reporting functionalities.
 
+## Project Context
+
+This project was a collaborative effort developed by a team of four students for a university course. My teammates were Anton L., Hamza B., and Eqbal A. (BEST TEAM EVER YEAAAHHH <3). The full source code is sadly hosted in a private university repository. 
+
+---
+
 ## Screenshots
 
 | Dashboard Overview | Checkout Interface |
@@ -47,10 +53,6 @@ We used test to ensure stability and correctness of features by writing integrat
 - **Frontend:** Thymeleaf, Semantic UI, HTML, CSS 
 - **Database:** H2
 - **Testing:** JUnit 5, MockMvc, Spring Boot Test 
-
-## Project Context
-
-This project was a collaborative effort developed by a team of four students for a university course. My teammates were Anton L., Hamza B., and Eqbal A. (BEST TEAM EVER YEAAAHHH <3). The full source code is sadly hosted in a private university repository. 
 
 ## How to Explore The Showcase
 
