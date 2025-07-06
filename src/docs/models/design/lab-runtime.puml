@@ -1,0 +1,67 @@
+@startuml Lab Runtime View
+
+actor Apothekenmitarbeiter as E
+participant LabController
+participant PharmacyOrderManagement as OM
+participant IngredientCatalog as IC
+participant Cart
+
+autonumber "<b>[000]"
+
+E -> LabController: labList()
+LabController -> OM: findAll()
+OM --> LabController: Streamable<LabOrder>
+LabController --> E: Template: lab-list.html
+
+|||
+
+E -> LabController: labNew()
+LabController --> E: Template: lab-new.html
+
+|||
+
+E -> LabController: labNew(search)
+LabController -> IC: findByName(search)
+IC --> LabController: Streamable<MixtureIngredient>
+LabController --> E: Template: lab-new.html
+
+|||
+
+E -> LabController: labNewIngredient(search, ingredient, qty)
+LabController -> Cart: addOrUpdateItem()
+Cart --> LabController
+LabController --> E: Template: lab-new.html
+
+|||
+
+E -> LabController: labOrder()
+LabController -> Cart: addItemsTo(order)
+LabController -> OM: payOrder(order)
+LabController --> E: Redirect: lab-bill.html
+
+== Bestellung wurde hinterlegt ==
+
+|||
+E -> E: Click auf Laborbestellungen (/lab/list)
+
+|||
+E -> LabController: labStart(order)
+LabController -> OM: startOrder(order)
+OM --> LabController
+LabController --> E: Redirect: lab-list.html
+
+== Mixtur wird hergestellt ==
+
+E -> LabController: labManufacture()
+LabController -> OM: completeOrder(order)
+OM --> LabController
+LabController --> E: Redirect: lab-list.html
+
+== Kunde holt Mixtur ab ==
+
+E -> LabController: labPickup()
+LabController -> OM: pickupOrder(order)
+OM --> LabController
+LabController --> E: Redirect: lab-list.html
+
+@enduml

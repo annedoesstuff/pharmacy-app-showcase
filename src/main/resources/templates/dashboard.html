@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	layout:decorate="~{layout}"
+>
+	<head>
+		<title>Dashboard</title>
+		<th:block layout:fragment="css"> </th:block>
+	</head>
+	<body>
+		<section layout:fragment="content">
+			<h1 class="ui header">Dashboard</h1>
+			<div class="ui divider"></div>
+
+			<div th:if="${successMessage}" class="ui success message">
+				<i class="close icon"></i>
+				<div class="header" th:text="${successMessage}"></div>
+			</div>
+			<div th:if="${errorMessage}" class="ui error message">
+				<i class="close icon"></i>
+				<div class="header" th:text="${errorMessage}"></div>
+			</div>
+
+			<div class="ui four column doubling stackable grid container">
+				<div class="column" sec:authorize="hasAnyRole('BOSS', 'EMPLOYEE')">
+					<div class="ui raised card">
+						<div class="content">
+							<div class="ui small statistic">
+								<div class="label"><i class="flask icon"></i> Offene Laboraufträge</div>
+								<div class="value" th:text="${anzahlOffenerLaborauftraege ?: 0}">0</div>
+							</div>
+						</div>
+						<a th:href="@{/labor/liste}" class="ui bottom attached button small blue"
+							><i class="list icon"></i> Laboraufträge anzeigen</a>
+					</div>
+				</div>
+
+				<div class="column">
+					<div class="ui raised card">
+						<div class="content">
+							<div class="ui small statistic">
+								<div class="label"><i class="clipboard list icon"></i> Offene Kundenbestellungen</div>
+								<div class="value" th:text="${numberOpenBackorders ?: 0}">0</div>
+							</div>
+						</div>
+						<a th:href="@{/offenebestellungen}" class="ui bottom attached button small teal">
+							<i class="tasks icon"></i> Kundenbestellungen anzeigen</a>
+					</div>
+				</div>
+
+				<div class="column" sec:authorize="hasAnyRole('BOSS')">
+					<div class="ui raised card">
+						<div class="content">
+							<div class="ui small statistic">
+								<div class="label"><i class="clock outline icon"></i> Verfällt bald</div>
+								<div class="value" th:text="${anzahlBaldVerfallend}">0</div>
+							</div>
+						</div>
+						<a th:href="@{/berichte/verfall}" class="ui bottom attached button small yellow"
+							><i class="calendar times outline icon"></i> Verfallsliste anzeigen</a>
+					</div>
+				</div>
+
+				<div class="column" sec:authorize="hasAnyRole('BOSS')">
+					<div class="ui raised card">
+						<div class="content">
+							<div class="ui small statistic">
+								<div class="label"><i class="cart arrow down icon"></i> Niedriger Bestand</div>
+								<div class="value" th:text="${anzahlNachzubestellen ?: 0}">0</div>
+							</div>
+						</div>
+					<a th:href="@{/berichte/nachbestellung}" class="ui bottom attached button small orange">
+						<i class="eye icon"></i> Artikel nachbestellen
+					</a>
+				</div>
+			</div>
+		</div>
+
+			<div class="ui center aligned segment basic">
+				<h4 class="ui header">
+					Aktuelle Praxis:
+					<span th:if="${aktivePraxis}" class="ui green horizontal label">
+						<i class="hospital user icon"></i> Aktiv
+					</span>
+					<span th:unless="${aktivePraxis}" class="ui grey horizontal label">
+						<i class="hospital user icon"></i> Inaktiv
+					</span>
+				</h4>
+			</div>
+
+			<div class="ui divider"></div>
+			<h2 class="ui header">Schnellzugriff</h2>
+			<a th:href="@{/labor}" class="ui primary button">
+				<i class="plus square outline icon"></i> Neuen Laborauftrag anlegen
+			</a>
+			<a th:href="@{/checkout}" class="ui teal button">
+				<i class="credit card icon"></i> Kasse öffnen
+			</a>
+		</section>
+
+		<th:block layout:fragment="scripts"> </th:block>
+	</body>
+</html>

@@ -1,0 +1,186 @@
+<div class="ui segment" th:fragment="cart(baseURL, cart , itemAvailableQuantities, itemBackorderQuantities)">
+	<style>
+		#cart-items .item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 0 !important;
+		}
+
+		#cart-items .content {
+			flex-grow: 1;
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+
+		#cart-items .right.floated.content {
+			flex-grow: 0;
+			flex-shrink: 0;
+			margin-left: auto;
+			white-space: nowrap;
+		}
+
+		#cart-items .price {
+			min-width: 70px;
+			text-align: right;
+		}
+
+		#cart-summary {
+			margin-top: 1em;
+			padding-top: 1em;
+			border-top: 1px solid #eee;
+		}
+
+		.quantity-form {
+			display: inline-flex;
+			width: 50px;
+			text-align: center;
+			margin: 0 5px;
+		}
+
+		.quantity-input {
+			min-width: 0;
+			width: 100%;
+			text-align: center;
+		}
+
+		.item-availability-info {
+			font-size: 0.85em;
+			color: #555;
+			margin-left: 5px;
+		}
+
+		.item-availability-info .backorder {
+			color: orange;
+			font-weight: bold;
+		}
+
+		.item-availability-info .instock {
+			color: green;
+		}
+	</style>
+	<h3 class="ui header"><i class="shopping cart icon"></i> Warenkorb</h3>
+	<div id="cart-items" class="ui middle aligned divided list">
+		<div class="item" th:each="item : ${cart}">
+			<div class="right floated content">
+				<!-- change quantity buttons -->
+				<form th:action="@{'/' + ${baseURL} + '/updateQuantity'}" method="post" style="display: inline">
+					<input type="hidden" name="itemId" th:value="${item.id}" />
+					<input type="hidden" name="quantity" th:value="${item.quantity.amount.intValue() - 1}" />
+					<button class="ui icon mini button" type="submit" th:disabled="${item.quantity.amount.intValue() <= 0}"
+						aria-label="Menge verringern">
+						<i class="minus icon"></i>
+					</button>
+				</form>
+
+				<form th:action="@{'/' + ${baseURL} + '/updateQuantity'}" method="post" class="quantity-form">
+					<input type="number" class="quantity-input" name="quantity" th:value="${item.quantity.amount.intValue()}"
+						min="0" step="1" size="2" onchange="this.form.submit()" aria-label="Menge direkt eingeben" />
+					<input type="hidden" name="itemId" th:value="${item.id}" />
+				</form>
+
+				<form th:action="@{'/' + ${baseURL} + '/updateQuantity'}" method="post" style="display: inline">
+					<input type="hidden" name="itemId" th:value="${item.id}" />
+					<input type="hidden" name="quantity" th:value="${item.quantity.amount.intValue() + 1}" />
+					<button class="ui icon mini button" type="submit" aria-label="Menge erhöhen">
+						<i class="plus icon"></i>
+					</button>
+				</form>
+
+				<form th:action="@{'/' + ${baseURL} + '/updateQuantity'}" method="post"
+					style="display: inline; margin-left: 5px">
+					<input type="hidden" name="itemId" th:value="${item.id}" />
+					<input type="hidden" name="quantity" th:value="0" />
+					<button class="ui icon mini red button" type="submit" data-tooltip="Artikel entfernen">
+						<i class="trash alternate outline icon"></i>
+					</button>
+				</form>
+			</div>
+
+			<div class="content">
+				<span th:text="${item.productName}">Produkt XY</span>
+				<!-- show availability -->
+				<span class="item-availability-info"
+					th:if="${itemAvailableQuantities != null && itemBackorderQuantities != null}">
+					<span th:if="${itemBackorderQuantities.containsKey(item.id) && itemBackorderQuantities.get(item.id) > 0}">
+						(<span class="instock" th:text="${itemAvailableQuantities.get(item.id)}">X</span> sofort,
+						<span class="backorder" th:text="${itemBackorderQuantities.get(item.id)}">Y</span> auf Nachbestellung)
+					</span>
+					<span th:unless="${itemBackorderQuantities.containsKey(item.id) && itemBackorderQuantities.get(item.id) > 0}">
+						(<span class="instock" th:text="${itemAvailableQuantities.get(item.id)}">X</span> verfügbar)
+					</span>
+				</span>
+			</div>
+			<div class="right floated content price">
+				<span th:text="${{item.price}}">9.99 EUR</span>
+			</div>
+		</div>
+
+		<div class="item" th:if="${cart.empty}">Warenkorb ist leer.</div>
+	</div>
+
+	<div id="cart-summary" th:if="${!cart.empty}">
+		<div class="ui grid small">
+
+			<div class="eight wide column right aligned" th:if="${margin != null}">Pauschale (10%):</div>
+			<div class="eight wide column right aligned" th:text="${{margin}}" th:if="${margin != null}">
+				0.00 EUR
+			</div>
+
+			<!-- summary -->
+			<div class="eight wide column right aligned"
+				th:if="${calculatedCoPayment != null and calculatedCoPayment.number > 0}" sec:authorize="isAuthenticated()">
+				Zuzahlung (Kassenrezept):
+			</div>
+			<div class="eight wide column right aligned"
+				th:if="${calculatedCoPayment != null and calculatedCoPayment.number > 0}" th:text="${{calculatedCoPayment}}"
+				sec:authorize="isAuthenticated()">
+				0.00 EUR
+			</div>
+
+			<div class="eight wide column right aligned"><b>Gesamt :</b></div>
+			<div class="eight wide column right aligned">
+				<b><span th:text="${{totalPriceCash}}">0.00 EUR</span></b>
+			</div>
+
+			<div class="eight wide column right aligned"
+				th:if="${calculatedCoPayment != null and calculatedCoPayment.number > 0}" sec:authorize="isAuthenticated()">
+				<b>Gesamt (Kassenrezept):</b>
+			</div>
+			<div class="eight wide column right aligned"
+				th:if="${calculatedCoPayment != null and calculatedCoPayment.number > 0}" sec:authorize="isAuthenticated()">
+				<b><span th:text="${{totalPriceInsurance}}">0.00 EUR</span></b>
+			</div>
+		</div>
+		<div class="ui divider"></div>
+		<form th:action="@{'/' + ${baseURL} + '/finish'}" method="post">
+			<p>Zahlungsart wählen:</p>
+			<div class="ui two buttons" sec:authorize="!hasAnyRole('DOCTORS_OFFICE')">
+				<button name="paymentMethod" value="CASH" class="ui green button" type="submit">
+					<i class="money bill alternate outline icon"></i> Bezahlen
+				</button>
+				<button name="paymentMethod" value="INSURANCE" class="ui blue button" type="submit"
+					sec:authorize="isAuthenticated()" onclick="
+						const prescriptionNumber = prompt('Geben Sie die Rezeptnummer ein:')
+						if (prescriptionNumber) {
+							this.nextElementSibling.value = prescriptionNumber;
+						} else {
+							event.preventDefault()
+						}
+					">
+					<i class="first aid icon"></i> Kassenrezept
+				</button>
+				<input type="hidden" name="prescriptionNumber" value="" />
+			</div>
+		</form>
+		<form th:action="@{'/' + ${baseURL} + '/finish'}" method="post" sec:authorize="hasAnyRole('DOCTORS_OFFICE')"
+			style="margin-top: 1em">
+			<button name="paymentMethod" value="PRACTICE" class="ui green fluid button" type="submit">
+				Berechnen
+			</button>
+		</form>
+		<form th:action="@{'/' + ${baseURL} + '/clear'}" method="post" style="margin-top: 1em">
+			<button class="ui fluid button negative" type="submit">Warenkorb leeren</button>
+		</form>
+	</div>
+</div>

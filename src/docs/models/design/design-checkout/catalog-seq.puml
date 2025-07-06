@@ -1,0 +1,32 @@
+@startuml
+actor System as Systemstart
+actor BOSS
+
+participant CatalogDataInitializer
+participant Medication
+participant MixtureIngredient
+participant MedicationCatalog
+participant IngredientCatalog
+participant MedicationController
+participant MultiInventory
+participant PharmacyInventoryItem
+
+== Systemstart: Initialisierung ==
+Systemstart -> CatalogDataInitializer : initialize()
+CatalogDataInitializer -> Medication : new Medication(...)
+CatalogDataInitializer -> MedicationCatalog : save(Medication)
+CatalogDataInitializer -> MixtureIngredient : new MixtureIngredient(...)
+CatalogDataInitializer -> IngredientCatalog : save(MixtureIngredient)
+
+== BOSS: Medikament hinzufügen ==
+BOSS -> MedicationController : GET /medikamente/neu (showAddForm)
+MedicationController --> BOSS : zeige Formular
+
+BOSS -> MedicationController : POST /medikamente/neu (addMedication(...))
+MedicationController -> Medication : new Medication(...)
+MedicationController -> MedicationCatalog : save(Medication)
+MedicationController -> PharmacyInventoryItem : new PharmacyInventoryItem(...)
+MedicationController -> MultiInventory : save(PharmacyInventoryItem)
+MedicationController --> BOSS : redirect:/inventar
+
+@enduml

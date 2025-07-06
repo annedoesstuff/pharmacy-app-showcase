@@ -1,0 +1,334 @@
+= Entwicklerdokumentation
+:project_name: name-des-projekts
+:toc: left
+:numbered:
+
+
+[options="header"]
+[cols="1, 3, 3"]
+|===
+|Version | Bearbeitungsdatum   | Autor
+|0.5	| 05.05.2025 | Anton Liaposhchenko
+|0.9  | 11.05.2025 | Anton Liaposhchenko, Hamza Boujeddaine, Anne Panzer, Eqbal Al-Qadami
+|1.0  | 21.05.2025 | Anton Liaposhchenko, Hamza Boujeddaine, Anne Panzer, Eqbal Al-Qadami
+|===
+
+
+== Einführung
+* Dem großen Unterbrunner Ärztehaus wird eine Apotheke angegliedert. Es handelt sich um
+einen Verkaufsraum mit drei Kassen und einer Selbstbedienungsabteilung für nicht
+rezeptpflichtige Waren (Pflaster, medizinische Badezusätze, Gesundheitstees aller Art,
+Pflegesalben etc.).
+
+
+* Daneben gibt es ein kleines chemisches Labor, wo auf Anforderung
+der Ärzte spezielle Pulver, Salben und Tinkturen bereitet werden können (abzuholen einen
+Tag nach Bestellung).
+
+
+* Bei Bestellungen von Mixturen oder nicht vorrätigen Medikamenten werden den Kunden
+Bestellzettel mit einer eindeutigen Identifikationsnummer ausgegeben (das Rezept
+verbleibt in der Apotheke).
+
+* Die  Apothekenschränke  sind  wie  üblich  alphabetisch  sortiert.  An  jeder
+Medikamentenpackung ist ein Strichcode angebracht, welcher das Medikament und die
+Packungsgröße eindeutig identifiziert. Bei Verkauf eines Medikaments wird der Code an
+der Kasse eingelesen.
+Auf diese Weise wird der Posten auf die Kundenrechnung und
+gleichzeitig in die tägliche Nachbestellung übernommen.
+
+* Medikamente werden entweder wie andere Waren bar bezahlt oder an Kassenpatienten
+gegen Entrichtung der Zuzahlung (10% des Preises, jedoch mindestens 5 EUR und
+maximal 10 EUR pro Arzneimittel) abgegeben. Kassenleistungen werden von den
+Apotheken mit einer Zentralkasse monatlich abgerechnet.
+
+* Mit Hilfe der neuen Apotheke ersparen sich die Praxen auch die Bewirtschaftung eigener
+Medizinvorräte: Neben den Mitarbeitern der Apotheke haben auch die Ärzte und einige
+besonders zuverlässige Arzthelferinnen jederzeit Zugang zum Medikamentenschrank. Für
+diesen Zweck gibt es eine Tür zur Apotheke, die vom Ärztehaus aus durch Eingabe einer
+praxisspezifischen PIN geöffnet werden kann. Auf der anderen Seite der Tür befindet sich
+ein Lesegerät, an dem beim Verlassen der Strichcode der entnommenen Medikamente
+erfasst wird. Zwecks eindeutiger Zuordnung der Medikamente und um den Betrieb der
+Apotheke nicht übermäßig zu stören, hat zu einem Zeitpunkt höchstens eine Praxis
+Zugang zur Apotheke. Die Ärzte haben erklärt, dass dies keine wesentliche Einschränkung
+darstellt. Die Abrechnung mit den einzelnen Arztpraxen erfolgt monatlich.
+
+* Alle Lesegeräte sind an den Computer der Apotheke angeschlossen, über den die
+automatische Nachbestellung von Medikamenten, die eigene Bilanz und die Abrechnung
+mit den Ersatzkassen läuft. Außerdem wird an diesem Computer wöchentlich eine Liste
+der Medikamente ausgedruckt, deren Verfallsdatum in der nächsten Woche erreicht wird
+oder das schon überschritten ist. Diese werden wöchentlich ausgesondert.
+
+* Die Einführung eines weiteren Dienstes - die Auslieferung von Medikamenten an das
+nahegelegene Altersheim und andere bewegungseingeschränkte Patienten wird derzeit
+diskutiert.
+
+== Randbedingungen
+=== Hardware-Vorgaben
+Eine Liste der erforderlichen Geräte/Hardware zur Ausführung und Verwendung der Anwendung:
+
+* **Server** (bzw. Apotheken-Computer)
+** Mindestanforderungen: CPU mit 2 GHz Taktrate, 4 GB freien Hauptspeicher, 10 GB freien Festplattenspeicher
+* **Desktop-System** mit Maus und Tastatur (für die drei Kassen und die SB-Kasse).
+  Die Kassen sind jeweils mit einem Strichcode-Scanner ausgestattet.
+** Mindestanforderungen: CPU mit 2 GHz Taktrate, 1 GB freien Hauptspeicher
+
+=== Software-Vorgaben
+
+==== Server
+Auf dem Server ist die folgende (oder neuere) Java-Version erforderlich:
+
+- Java 24
+
+==== Client
+Auf dem Client ist eine der folgenden (oder neueren) Browser-Versionen erforderlich:
+
+- Google Chrome (oder Chromium-basiert) 139
+- Firefox 138
+
+Der Browser muss in der Lage sein, Cookies zu speichern.
+
+=== Vorgaben zum Betrieb der Software
+
+Das System wird zum Verkauf von Waren in der Apotheke eingesetzt. Die Software soll auf einem Server betrieben werden und durch die Nutzer über eine Weboberfläche bedienbar sein.
+
+Die Nutzer der Software sind Kunden, Arztpraxen, Apothekenmitarbeiter und der Apothekenchef. Die Nutzeroberfläche soll deswegen für Menschen ohne technischen Hintergrund intuitiv bedienbar sein.
+
+Die Anwendung muss Daten in einer Datenbank persistent speichern und für die Nutzer (je nach Rolle/Zugriffsberechtigung) zugänglich machen (d.h. die Nutzer sollen keine SQL-Anfragen schreiben müssen).
+
+== Kontextabgrenzung
+image::models/design/context.png[]
+
+== Lösungsstrategie
+=== Erfüllung der Qualitätsziele
+[options="header", cols="1h,5"]
+|===
+|Qualitätsziel |Lösungsansatz
+
+|Korrektheit
+|Die Korrektheit der Berechnungen und Abläufen wird durch Unit-Tests sichergestellt. Hier kommt das Salespoint-Framework zum Einsatz, das einige Aufgaben (z.B. das Erfassen von Beständen) übernimmt.
+
+|Sicherheit
+a|
+* **Vertraulichkeit:** nur berechtigte Personen dürfen auf sensible Daten zugreifen. Dazu werden Spring Security (`@PreAuthorize`), Salespoint (`@LoggedIn`) sowie Thymeleaf (`sec:authorize`) verwendet.
+
+* **Integrität:** die Anwendung soll das unauthorisierte Ändern von Daten verhindern. Dazu werden ebenfalls Spring Security und Salespoint (siehe Vertraulichkeit) benutzt.
+
+|Nutzbarkeit
+a|
+* **Lernbarkeit:** die Anwendung soll für die Nutzer verständlich sein. Das wird u.a. durch eindeutige Beschreibungen von Textfeldern realisiert.
+
+* **Fehlerbehandlung:** die Anwendung soll ungültige Eingaben erkennen. Diese dürfen nicht zum ungültigen Systemzustand führen.
+
+* **Barrierefreiheit:** die Anwendung soll von möglichst vielen (potentiell eingeschränkten) Personen bedienbar sein. Dies wird u.a. durch angemessene Schriftgröße und ausreichenden Kontrast in der Nutzeroberfläche sichergestellt.
+
+|Performance
+a|
+Das System soll einen reibungslosen Workflow bei Standardvorgängen (Kasse, Bestandsabfrage) ermöglichen. Es muss Testfälle geben (automatisch oder manuell), die prüfen, ob dieses Ziel erfüllt ist.
+
+|Wartbarkeit / Erweiterbarkeit
+a|
+* **Modularität:** das System soll sich aus einzelnen Modulen zusammensetzen, sodass Änderungen an einer Stelle sich auf wenige Stellen auswirken.
+* **Wiederverwendbarkeit:** Teilkomponenten sollen durch andere Systeme und Komponenten wiederverwendbar sein.
+* **Modifizierbarkeit:** Die Anwendung soll ohne Fehler erweitert oder modifiziert werden können.
+
+|===
+
+=== Softwarearchitektur
+image::./models/design/architecture.png[]
+
+=== Entwurfsentscheidungen
+==== Verwendete Muster
+Spring MVC, https://en.wikipedia.org/wiki/Post/Redirect/Get[Post-Redirect-Get]
+
+==== Persistenz
+Es wird eine H2-Datenbank (über JPA) verwendet.
+
+==== Benutzeroberfläche
+image::.\models\design\dialognetz.svg[Dialognetz]
+
+==== Verwendung externer Frameworks
+
+
+[options="header", cols="1,2,3"]
+|===
+|Externes Package |Verwendet von |Warum
+|Spring Boot|Allgemeine Nutzung|vorgegeben
+|Spring Data JPA|Persistenz|vorgegeben
+|Spring Security|Sicherheit|vorgegeben
+|Salespoint|Allgemeine Nutzung|vorgegeben
+|Semantic UI|UI|Semantic UI ist eine CSS-Bibliothek, die die Entwicklung der Benutzeroberfläche vereinfacht.
+|===
+
+== Bausteinsicht
+
+=== Package-Diagramm
+image::./models/design/package.png[]
+
+
+=== Entwurfsklassendiagramme der einzelnen Packages
+
+==== User (`user`)
+image::models/design/User.png[]
+
+|===
+|Klasse  | Beschreibung
+|RegistrationForm | klasse enthält alle Informationen der neuen zu registrierenden Mitarbeitern.
+|User | definiert den Software-Mitarbeiter.
+|UserController | Controller für alle Seiten, die Teil des Registration und Login sind.
+|UserDataInitializer  | intialisiert default Mitarbeiter (Chef, Apotheckenmitarbeiter ...)
+| UserService  | erstellt neue Apotekenmitarbeiter durch Methode `createUser`, und generiert für jeden einen Benutzername
+|===
+
+==== Personal (`personal`)
+
+
+image::models/design/personal.png[]
+
+[cols="1,3", options="header"]
+|===
+|Klasse/Enumeration |Beschreibung
+
+|PersonalService
+|Serviceklasse zur Verwaltung von Benutzern. Bietet Methoden zum Aktivieren (enableUser), Deaktivieren (disableUser), Löschen (deleteById) und zur Suche nach Benutzern (findByUsername).
+
+|PesonalController
+|Spring MVC Controller für die Benutzerverwaltung im Adminbereich. Ermöglicht die Anzeige aller Benutzer, das Aktivieren, Deaktivieren und Löschen per ID sowie das Anlegen neuer Benutzer mit einem Registrierungsformular.
+
+|DoctorSessionLock
+|Komponente zur Sitzungsverwaltung für `DOCTORS_OFFICE`. Stellt sicher, dass nur ein Benutzer dieser Rolle gleichzeitig einlogen kann.
+
+|CustomLogoutSuccessHandler
+|Spring Security LogoutHandler. Überprüft beim Logout, ob ein DOCTORS_OFFICE Benutzer abgemeldet wird, und entfernt ihn aus dem `DoctorSessionLock`.
+|===
+
+==== Order (`order`)
+image::./models/design/order.png[]
+
+[options="header"]
+|===
+|Klasse/Enumeration |Description
+
+|`Insurance` und `PracticePayment`
+|Salespoint-Zahlungsmethoden (zusätzlich zu `Cash.CASH`), die in Orders verwendet werden.
+
+|`PharmacyInventoryItem`
+|Inventar-Eintrag mit Verfalldatum (für Medikamente)
+
+|`PharmacyOrder`
+|Bestellungs-Klasse (wird für alle Bestellungen verwendet) mit zusätzlichen Feldern: Status, Typ (Kasse oder Labor), Abrechnungsstatus.
+
+|`PharmacyOrderManagement`
+|`OrderManagement` für `PharmacyOrder` s, hat Methoden für die zusätzlichen Zustände.
+
+|`OrderType`
+|Art der Bestellung (Kasse oder Labor).
+
+|`BillStatus`
+|Abrechnungsstatus (offen, gesendet oder erstattet).
+
+|`LabOrderStatus`
+|Status für Bestellungen, die am nächsten Tag abzuholen sind (Laborbestellungen und Bestellungen von nicht vorrätigen Medikamenten an der Kasse).
+
+|===
+
+==== Labor (`lab`)
+image::./models/design/lab.png[]
+
+[options="header"]
+|===
+|Klasse/Enumeration |Description
+|LabController |Controller zur Erstellung und Verwaltung von Laborbestellungen.
+|===
+
+==== Checkout (`checkout`)
+
+image::.\models\design\design-checkout\checkout.svg[Checkout]
+
+[options="header"]
+|===
+|Klasse/Enumeration |Beschreibung
+|CheckoutController |Nimmt Web-Anfragen für die Kassenoberfläche entgegen, interagiert mit Warenkorb, Inventar und Katalog, startet Checkout und Bestellungen.
+|CheckoutService |Kapselt die Geschäftslogik zur Berechnung der Zuzahlung für Kassenrezepte basierend auf dem Warenkorbinhalt.
+|===
+
+==== Cataloge (`catalog`)
+image::models/design/design-checkout/catalog.png[]
+[options="header"]
+|===
+|Klasse/Enumeration |Beschreibung
+|Medication |Repräsentiert ein verkaufbares Medikament oder einen anderen Artikel in der Apotheke. Erbt von Salespoint `Product` und fügt apotheken-spezifische Felder hinzu. (`@Entity`)
+|MedicationCatalog |Spring Data Repository Interface für den Zugriff auf `Medication`-Objekte in der Datenbank. Erbt von Salespoint `Catalog`.
+|CatalogDataInitializer |Eine Spring-Komponente (`@Component`), die beim Start der Anwendung initiale Testdaten (Medikamente) in den Katalog einfügt, falls dieser leer ist.
+|MedicationController
+|Spring MVC Controller (`@Controller`) zur Verwaltung von Medikamenten und Zutaten. Stellt Formularseiten bereit und verarbeitet neue Einträge. Zugriff nur mit Rolle `BOSS`.
+
+|===
+
+==== Inventory (`inventory`)
+
+image::models/design/design-checkout/Inventory_initializer.png[]
+[options="header"]
+|===
+|Klasse/Enumeration |Beschreibung
+|InventoryInitiali
+zer |Sorgt dafür, dass beim Anwendungsstart für jedes im `MedicationCatalog` gefundene Medikament ein initialer Lagerbestand im `MultiInventory<PharmacyInventoryItem>` angelegt wird, falls für dieses Produkt noch kein Bestand existiert.
+
+|InventoryService
+|Service zur Berechnung verfügbarer Bestände. Liefert alle Medikamente mit niedriger Verfügbarkeit und berechnet reservierte Mengen aus offenen, bezahlten Bestellungen.
+
+|InventoryController
+|Spring MVC Controller zur Anzeige des kompletten Lagerbestands auf der Weboberfläche. Zugriff erhalten Nutzer mit den Rollen `BOSS` oder `EMPLOYEE`.
+|===
+==== Report
+
+image::models/design/design-checkout/report.png[]
+[options="header"]
+|===
+|Klasse |Beschreibung
+
+|ReportService
+|Business-Logik für Berichte. Beinhaltet Filter für bald ablaufende Medikamente, Kassenabrechnung nach Monat, sowie das Löschen von Lagerpositionen.
+
+|ReportController
+|Controller für Lagerberichte, Nachbestellungen und Kassenabrechnung. Zuständig für das Anzeigen und Nachbestellen von Medikamenten sowie das Bearbeiten von Versicherungsrechnungen.
+
+|PraxisReportController
+|Erstellt Berichte für einzelne Praxen, gruppiert nach Benutzerkonten mit der Rolle `DOCTORS_OFFICE`. Zeigt Verkäufe und Rechnungsstatus an.
+
+|ExpiringMedicationController
+|Controller zur Anzeige und Verwaltung bald ablaufender Medikamente. Bietet eine Löschfunktion für abgelaufene Artikel.
+
+|===
+
+
+=== Rückverfolgbarkeit zwischen Analyse- und Entwurfsmodell
+
+[options="header"]
+|===
+|Klasse/Enumeration (Analysemodell) |Klasse/Enumeration (Entwurfsmodell)
+|LabOrder |LabOrder
+|Personal | pharmacy.personal.PersonalService, pharmacy.personal.PersonalController
+|Mitarbeiter | pharmacy.user.User, salespointframework.UserAccount
+|Klinik (DOCTORS_OFFICE) | pharmacy.user.User (mit Rolle `DOCTORS_OFFICE`)
+|Benutzer | pharmacy.user.User, salespointframework.UserAccount
+|===
+
+
+== Laufzeitsicht
+
+=== Checkout
+image::.\models\design\design-checkout\checkout-runtime.svg[Cataloge]
+
+// TODO: plantUML pic
+
+=== User
+image::models/design/User-runtime1.png[]
+
+=== Labor
+image::./models/design/lab-runtime.png[]
+
+=== Personal
+image::models/design/personal2.png[]
+=== Catalog
+image::models/design/design-checkout/catalog-seq.png[]

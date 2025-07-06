@@ -1,0 +1,19 @@
+@startuml UC001
+actor Kunde
+participant Apothekenmitarbeiter
+participant System
+
+  Kunde -> Apothekenmitarbeiter : Rezept übergeben
+  Apothekenmitarbeiter --> System : Medikamente suchen, Verfügbarkeit prüfen
+
+  alt Verfügbar
+    Apothekenmitarbeiter -> System : Strichcodes scannen
+    System -> Apothekenmitarbeiter : Kundenrechnung ausstellen
+    Apothekenmitarbeiter -> Kunde :  Medikamente und Rechnung ausgeben
+
+  else nicht verfügbar
+    Apothekenmitarbeiter -> System : Bestellung hinterlegen
+    System -> Apothekenmitarbeiter : Bestellzettel ausstellen
+    Apothekenmitarbeiter -> Kunde : Bestellzettel mit ID übergeben
+    end
+@enduml

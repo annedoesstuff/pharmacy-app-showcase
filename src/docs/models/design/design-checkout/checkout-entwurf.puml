@@ -1,0 +1,56 @@
+@startuml checkout
+package pharmacy.kasse {
+    class KasseController <<Controller>> {
+        - catalog: MedicationCatalog
+        - inventory: UniqueInventory<InventoryItem>
+        - checkoutService: CheckoutService
+        - cart: Cart
+        + initializeCart(): Cart <<@ModelAttribute>>
+        + checkoutView(Model): String <<@GetMapping>>
+        + addToCart(String, int, RedirectAttributes): String <<@PostMapping>>
+        + updateQuantity(String, int, RedirectAttributes): String <<@PostMapping>>
+        + removeItem(String, RedirectAttributes): String <<@PostMapping>>
+        + clearCart(RedirectAttributes): String <<@PostMapping>>
+        + finish(String, RedirectAttributes): String <<@PostMapping>>
+        + billView(Model): String <<@GetMapping>>
+        + backorder(String, String, RedirectAttributes): String <<@PostMapping>>
+        + backorderView(Model): String <<@GetMapping>>
+        - findMedicationByBarcode(String): Optional<Medication>
+    }
+
+    class CheckoutService <<Service>> {
+        - CO_PAYMENT_MIN: Money
+        - CO_PAYMENT_MAX: Money
+        - CO_PAYMENT_RATE: BigDecimal
+        + calculateCoPayment(Cart): Money
+    }
+
+    CheckoutController o--> CheckoutService
+}
+package pharmacy.catalog {
+   class Medication
+   interface MedicationCatalog <<Repository>> {
+       + findByBarcode(String): Optional<Medication>
+   }
+}
+
+package org.salespointframework {
+ package order {
+   interface Cart
+   class CartItem
+   Cart "1" *--> "*" CartItem
+ }
+ package inventory {
+   interface UniqueInventory<InventoryItem>
+   class InventoryItem
+ }
+}
+
+pharmacy.checkout.CheckoutController --> pharmacy.catalog.MedicationCatalog
+pharmacy.checkout.CheckoutController --> org.salespointframework.inventory.UniqueInventory
+pharmacy.checkout.CheckoutController --> org.salespointframework.order.Cart
+pharmacy.checkout.CheckoutService --> org.salespointframework.order.Cart
+pharmacy.checkout.CheckoutService --> pharmacy.catalog.Medication
+
+
+@enduml

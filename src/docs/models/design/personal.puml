@@ -1,0 +1,71 @@
+@startuml
+
+
+package pharmacy.personal {
+
+  class PersonalService {
+      - UserRepository userRepository
+      - UserAccountManagement userAccounts
+      + activateInitialUsers()
+      + enableUser(id: UUID)
+      + disableUser(id: UUID)
+      + deleteById(id: UUID)
+      + findByUsername(username: String): User
+  }
+
+  class PesonalController {
+    - UserService userService
+    - PersonalService personalService
+    + personal(model: Model): String
+    + addEmployee(model: Model): String
+    + deleteUser(id: UUID, redirectAttributes: RedirectAttributes): String
+    + enableUser(id: UUID, redirectAttributes: RedirectAttributes): String
+    + disableUser(id: UUID, redirectAttributes: RedirectAttributes): String
+  }
+
+  class DoctorSessionLock {
+    - AtomicReference<String> currentDoctor
+    + tryLogin(username: String): boolean
+    + logout(username: String)
+    + getCurrentDoctor(): String
+  }
+
+  class CustomLogoutSuccessHandler {
+    - DoctorSessionLock doctorSessionLock
+    - PersonalService personalService
+    + onLogoutSuccess(request: HttpServletRequest,
+    response: HttpServletResponse, authentication: Authentication)
+  }
+}
+
+package pharmacy.user {
+
+  class RegistrationForm {
+
+  }
+
+  class User {
+
+  }
+
+  class UserService {
+
+  }
+}
+
+PersonalService --> User : uses
+PersonalService --> UserAccount : manages
+PersonalService --> UserRepository
+PersonalService --> UserService : uses
+
+PesonalController --> PersonalService
+PesonalController --> UserService
+
+RegistrationForm --> User
+UserService --> User
+
+CustomLogoutSuccessHandler --> DoctorSessionLock
+CustomLogoutSuccessHandler --> PersonalService
+CustomLogoutSuccessHandler --> User
+
+@enduml

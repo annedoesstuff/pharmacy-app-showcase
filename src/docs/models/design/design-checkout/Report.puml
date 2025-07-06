@@ -1,0 +1,65 @@
+@startuml report
+
+package pharmacy {
+    package report {
+        class ReportService <<Service>> {
+            + getExpiringMedicationsFilter(): Streamable<PharmacyInventoryItem>
+            + deleteMedication(InventoryItemIdentifier): void
+            + getBilledMedications(String): List<Object[]>
+            + markBillAsSent(String): void
+            + markBillAsPaid(String): void
+        }
+        class ReportController <<Controller>> {
+            + showReorderList(int, Model): String
+            + showBestellformular(ProductIdentifier, Model): String
+            + reorderMedication(Medication, Quantity, LocalDate, RedirectAttributes): String
+            + showInsuranceBill(String, Model): String
+            + markBillAsSent(String, Model): String
+            + markBillAsPaid(String, Model): String
+        }
+        class PraxisReportController <<Controller>> {
+            + showPraxisReports(Model): String
+            + markBillAsSent(UserAccount, Model): String
+            + markBillAsPaid(UserAccount, Model): String
+        }
+        class ExpiringMedicationController <<Controller>> {
+            + showExpiringMedication(Model): String
+            + deleteExpiredMedication(InventoryItemIdentifier, RedirectAttributes): String
+        }
+    }
+    package inventory{
+       class InventoryService
+       }
+    package catalog{
+        class MedicationCatalog
+        }
+    package order{
+         class PharmacyOrderManagement
+            }
+    package checkout{
+          class CheckoutService
+                }
+
+report.ReportController --> report.ReportService
+report.ReportController --> InventoryService
+report.ReportController --> MedicationCatalog
+
+report.PraxisReportController --> PharmacyOrderManagement
+report.PraxisReportController --> MedicationCatalog
+
+report.ExpiringMedicationController --> report.ReportService
+
+report.ReportService --> PharmacyOrderManagement
+report.ReportService --> MedicationCatalog
+report.ReportService --> CheckoutService
+
+}
+package salespoint {
+    class UserAccountManagement
+    class MultiInventory
+      }
+ReportController --> MultiInventory
+ReportService --> MultiInventory
+PraxisReportController --> UserAccountManagement
+
+@enduml

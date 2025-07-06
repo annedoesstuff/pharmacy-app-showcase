@@ -1,0 +1,42 @@
+@startuml Lab Class Diagram
+
+package lab {
+  class LabController {
+    +labList(model: Model): String
+    +labNew(model: Model, search: Optional<String>): String
+    +labNewIngredient(model: Model, search: Optional<String>, ingredient: Optional<MixtureIngredient>, qty: int): String
+    +labOrder(userAccoubt: UserAccount, cart: Cart, paymentMethod: String): String
+		+labBillView(model: Model): String
+
+    +labStart(model: Model, order: LabOrder): String
+    +labManufacture(model: Model, order: LabOrder): String
+    +labPickup(model: Model, order: LabOrder): String
+  }
+}
+
+package order {
+	class PharmacyOrder
+	class PharmacyOrderManagement
+}
+
+package catalog {
+	class IngredientCatalog
+}
+
+package checkout {
+	class CheckoutService
+}
+
+package Salespoint {
+  class UserAccountManagement
+	class MultiInventory
+}
+
+LabController --> PharmacyOrderManagement
+LabController ..> PharmacyOrder
+LabController ..> UserAccountManagement
+LabController --> IngredientCatalog
+LabController --> CheckoutService
+LabController --> MultiInventory
+
+@enduml

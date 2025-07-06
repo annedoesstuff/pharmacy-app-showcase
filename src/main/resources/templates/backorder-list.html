@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+			xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+			layout:decorate="~{layout}">
+<head>
+	<title>Offene Kundenbestellungen</title>
+</head>
+<body>
+<section layout:fragment="content">
+	<h1 class="ui header">Offene Kundenbestellungen</h1>
+
+	<div th:if="${successMessage}" class="ui success message">
+		<i class="close icon"></i>
+		<div class="header" th:text="${successMessage}"></div>
+	</div>
+	<div th:if="${errorMessage}" class="ui error message">
+		<i class="close icon"></i>
+		<div class="header" th:text="${errorMessage}"></div>
+	</div>
+
+	<div class="ui segment">
+		<!--<h3 class="ui header">Bestellliste</h3>-->
+		<div th:if="${backorderList.isEmpty()}">
+			<p>Aktuell gibt es keine offenen Bestellungen.</p>
+		</div>
+
+		<div class="ui divided items" th:unless="${backorderList.isEmpty()}">
+			<div class="item" th:each="order : ${backorderList}">
+				<div class="content">
+					<div class="header">Bestellung #<span th:text="${order.id}">ORDER_ID</span></div>
+					<div class="meta">
+						<span>Bestellt am: <b th:text="${#temporals.format(order.dateCreated, 'dd.MM.yyyy HH:mm')}"></b></span>
+						<span th:if="${order.prescriptionNumber != null and !order.prescriptionNumber.isEmpty()}"> | Rezeptnummer: <b th:text="${order.prescriptionNumber}"></b></span>
+					</div>
+					<div class="description">
+						<h5 class="ui tiny header" style="margin-top: 1em;">Bestellte Artikel:</h5>
+						<div class="ui list">
+							<div class="item" th:each="line : ${order.orderLines}">
+								<i class="pills icon"></i>
+								<div class="content">
+									<span th:text="${line.quantity.amount.intValue()} + 'x ' + ${line.productName}">1x Medication</span>
+									- <span class="ui small" th:text="${{line.price}}">Price</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="extra" style="margin-top: 1em;">
+						<div th:if="${orderAvailability.get(order.id.toString())}">
+							<form th:action="@{/offenebestellungen/abschliessen}" method="post" class="ui form">
+								<input type="hidden" name="orderId" th:value="${order.id}" />
+								<button class="ui green button" type="submit">
+									<i class="check circle icon"></i> Bestellung abschließen &amp; an Kunde übergeben
+								</button>
+							</form>
+						</div>
+						<div th:unless="${orderAvailability.get(order.id.toString())}">
+							<button class="ui disabled grey button" data-tooltip="Einer oder mehrere Artikel sind noch nicht auf Lager." data-position="top center">
+								<i class="clock outline icon"></i> Warten auf Wareneingang
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</section>
+</body>
+</html>

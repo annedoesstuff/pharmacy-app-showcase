@@ -1,0 +1,23 @@
+@startuml runtime-user
+
+actor Apothekenmitarbeiter as ap
+actor Boss
+participant UserController as uc
+participant UserService as us
+participant Salespoint as sp
+participant Spring as spr
+
+Boss -> uc : registerPost()
+uc -> Boss : registration.html
+uc -> us : createUser() 
+us -> sp : create new UserAccount 
+sp -> sp : save Useraccount
+sp --> us : UserAccount
+us --> uc 
+uc --> Boss : Registrierung erfolgreich
+
+|||
+|||
+
+
+@enduml

@@ -1,0 +1,92 @@
+@startuml
+
+left to right direction
+
+    package user{
+        class User{
+            - id : UserIdentifier
+            - username : String
+            - name : String
+            - role : String
+            - enabled : String
+            + User(userAccount : UserAccount, name: String, username: String, role : String, enabled: String)
+            + getUserAccount() : String
+            + getName() : String
+            + getRole() : String
+            + getEnabled : Boolean
+        }
+
+        class UserController{
+            + UserController(userService : UserService)
+            + registerForm(model : Model) : String
+            + registerPost(form : RegistrationForm, model : Model, redirectAttributes : RedirectAttributtes)
+            + dashboard() : String
+        }
+
+        class UserDataInitializer{
+            - userAccountManagement : UserAccountManagement
+            - userService : UserService
+            + UserDataInitializer(userAccountManagement: UserAccountManagement, userservice: UserService)
+            + initialize() : void
+        }
+
+        interface UserRepository{
+            findAll() : Streamable <User>
+        }
+
+        class UserService{
+            - userRepository : UserRepository
+            - userAccountManagement : UserAccountManagement
+            + UserService(userRepository : UserRepository, userAccounts: UserAccountManagement)
+            + createUser(form : Registrationform) : User
+            + findAll() : Streamable <User>
+            + generateUsername(form : RegistrationForm) : String
+        }
+
+        class RegistrationForm{
+            - firstname : String
+            - lastname : String
+            - role : String
+            - passwort : String
+            - passwortConfirm : String
+            + RegistrationForm(firstname : String, lastname : String, role : String, passwort : String, passwordConfirm: String)
+            + getFirstname() : String
+            + getLastname() : String
+            + getRole() : String
+            + getPassword() : String
+            + getPasswortConfirm : String
+        }
+    }
+
+    package Salespoint{
+        package Role <<rectangle>>{
+
+        }
+
+        package UserAccount <<rectangle>>{
+
+        }
+
+        package DataInitializer <<rectangle>>{
+
+        }
+
+        package UserAccountManagement <<rectangle>>{ 
+
+        }
+        
+    }
+
+    User -> UserAccount
+    UserDataInitializer -> UserAccountManagement
+    UserService -> UserAccountManagement
+    UserDataInitializer ..> Role
+    UserService ..> Role
+    UserDataInitializer -> "1" UserService: userService
+    UserDataInitializer ..> DataInitializer
+    UserService ..> RegistrationForm
+    UserService ..> UserRepository
+    
+    UserController --> "1" UserService : userService
+
+@enduml

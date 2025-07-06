@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">ApoSys</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <link rel="stylesheet" th:href="@{/resources/css/style.css}"/>
+    <th:block layout:fragment="css"></th:block>
+
+</head>
+<body>
+<div class="ui container">
+
+    <nav th:insert="~{fragments/navigation :: navigation}"></nav>
+
+    <main class="ui main container" style="margin-top: 7em; padding-bottom: 6em;">
+        <section layout:fragment="content">
+            <p>Standard-Seiteninhalt, falls eine Seite keinen eigenen 'content'-Fragment definiert.</p>
+        </section>
+    </main>
+
+    <div class="ui inverted vertical footer segment" style="position: fixed; bottom: 0; width: 100%; left:0;">
+        <div class="ui center aligned container">
+            ApoSys &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> SP2025-G5
+        </div>
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+<script>
+    // global JS (z.B. init von Semantic UI Komponenten)
+    $(document).ready(function(){
+        // init aller Dropdowns auf der Seite
+        $('.ui.dropdown').dropdown();
+        $('.message .close').on('click', function() {
+            $(this).closest('.message').transition('fade');
+        });
+        // popup tool tips (idk if needed)
+        $('.button[data-tooltip], .icon[data-tooltip]').popup();
+    });
+</script>
+<th:block layout:fragment="scripts">
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+@startuml Order Class Diagram
+
+package order {
+  class PharmacyOrder {
+    -labStatus: LabOrderStatus
+    +billStatus: BillStatus
+    +type: OrderType
+
+    +isInProgress(): boolean
+    +isPickedUp(): boolean
+		-subtractOrderLineStock(): void
+  }
+
+  enum LabOrderStatus {
+    OPEN
+    IN_PROGRESS
+    READY_FOR_PICKUP
+    PICKED_UP
+  }
+
+  enum BillStatus {
+    OPEN
+    SENT
+		PAID
+  }
+
+	enum OrderType {
+		LAB
+		MEDICATION
+	}
+
+  class PharmacyOrderManagement {
+    +startOrder(order: LabOrder): void
+    +pickupOrder(order: LabOrder): void
+  }
+
+	class PharmacyInventoryItem {
+		-expiryDate: LocalDate
+	}
+
+	class Insurance {
+		+INSURANCE: Insurance {static}
+	}
+	class PracticePayment {
+		+PRACTICE: PracticePayment {static}
+	}
+
+  PharmacyOrderManagement ..> PharmacyOrder
+  PharmacyOrder -> LabOrderStatus
+  PharmacyOrder -> BillStatus
+  PharmacyOrder -> OrderType
+}
+
+package Salespoint {
+  interface OrderManagement<T extends Order> {
+		+save(order: T): T
+    +get(orderIdentifier: OrderIdentifier): Optional<T>
+    +contains(orderIdentifier: OrderIdentifier): boolean
+    +findBy(orderStatus: OrderStatus): Streamable<T>
+    +findBy(status: LabOrderStatus): Streamable<T>
+    +findBy(interval: Interval): Streamable<T>
+    +findBy(userAccount: UserAccount): Streamable<T>
+    +findBy(userAccount: UserAccount, interval: Interval): Streamable<T>
+    +startOrder(order: T): void
+    +completeOrder(order: T): void
+    +pickupOrder(order: T): void
+    +payOrder(order: T): boolean
+    +cancelOrder(order: T, reason: String): boolean
+    +delete(order: T): T
+    +findAll(pageable: Pageable): Page<T>
+	}
+  class Order
+	class PaymentMethod
+	class MultiInventoryItem
+	class MultiInventory<T extends MultiInventoryItem>
+}
+
+PharmacyOrderManagement ..|> OrderManagement: <<bind>>\n T -> PharmacyOrder
+PharmacyOrderManagement --> MultiInventory: <<bind>>\n T -> PharmacyInventoryItem
+PharmacyOrder --|> Order
+Insurance --|> PaymentMethod
+PracticePayment --|> PaymentMethod
+PharmacyInventoryItem --|> MultiInventoryItem
+
+@enduml

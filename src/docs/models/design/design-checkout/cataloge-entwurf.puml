@@ -1,0 +1,75 @@
+@startuml catalog
+left to right direction
+package pharmacy.catalog {
+    class Medication {
+        - barcode: String
+        - packaging: String
+        - needsPrescription: boolean
+        + Medication(String, String, Money, String, boolean)
+        + getBarcode(): String
+        + getPackaging(): String
+        + getNeedsPrescription(): boolean
+    }
+
+    interface MedicationCatalog <<Repository>> {
+         + findByBarcode(String): Optional<Medication>
+         + findAll(): Streamable<Medication>
+
+    }
+
+    class MixtureIngredient {
+        - needsPrescription: boolean
+        + MixtureIngredient(String, Money, boolean)
+        + getNeedsPrescription(): boolean
+    }
+
+    interface IngredientCatalog <<Repository>> {
+         + findAll(): Streamable<Medication>
+
+    }
+
+    class CatalogDataInitializer <<Component>> {
+        - medicationCatalog: MedicationCatalog
+        - ingredientCatalog: IngredientCatalog
+        + initialize(): void
+    }
+       class MedicationController <<Controller>> {
+            - medicationCatalog: MedicationCatalog
+            - ingredientCatalog: IngredientCatalog
+            - inventory: MultiInventory
+            + showAddForm(Model): String
+            + addMedication(...): String
+            + showIngredientForm(Model): String
+            + addIngredient(...): String
+        }
+
+}
+
+package org.salespointframework.catalog {
+    class Product {
+     + name: String
+     + price: Money
+     + id: ProductIdentifier
+    }
+    interface Catalog<T extends Product>
+}
+
+
+pharmacy.catalog.Medication --|> org.salespointframework.catalog.Product
+pharmacy.catalog.MedicationCatalog --|> org.salespointframework.catalog.Catalog
+pharmacy.catalog.MixtureIngredient --|> org.salespointframework.catalog.Product
+pharmacy.catalog.IngredientCatalog --|> org.salespointframework.catalog.Catalog
+
+pharmacy.catalog.MedicationController ..> pharmacy.catalog.MedicationCatalog : uses >
+pharmacy.catalog.MedicationController ..> pharmacy.catalog.IngredientCatalog : uses >
+pharmacy.catalog.MedicationController ..> org.salespointframework.inventory.MultiInventory : uses >
+pharmacy.catalog.MedicationController ..> pharmacy.catalog.Medication : creates >
+pharmacy.catalog.MedicationController ..> pharmacy.catalog.MixtureIngredient : creates >
+pharmacy.catalog.MedicationController ..> pharmacy.order.PharmacyInventoryItem : creates >
+
+pharmacy.catalog.CatalogDataInitializer ..> pharmacy.catalog.MedicationCatalog : uses >
+pharmacy.catalog.CatalogDataInitializer ..> pharmacy.catalog.Medication : creates >
+pharmacy.catalog.CatalogDataInitializer ..> pharmacy.catalog.IngredientCatalog : uses >
+pharmacy.catalog.CatalogDataInitializer ..> pharmacy.catalog.MixtureIngredient : creates >
+
+@enduml

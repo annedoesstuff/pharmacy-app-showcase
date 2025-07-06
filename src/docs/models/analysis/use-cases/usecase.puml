@@ -1,0 +1,56 @@
+
+@startuml
+left to right direction
+
+actor Kunde
+actor Arzt
+actor Arzthelferin
+actor Apothekenmitarbeiter
+actor Lieferdienst
+actor Apothekerleiter
+
+rectangle Apotheke {
+  (Rezeptfreie Produkte auswählen) as R1
+  (Medikament kaufen) as R2
+  (Rezept einlösen) as R3
+  (Bestellzettel mit ID bekommen) as R4
+  (Spezialpräparat anfordern) as R5
+  (Medikamente entnehmen) as R6
+  (Zugang über PIN) as R7
+  (Laborpräparate herstellen) as R8
+  (Barcode scannen) as R9
+  (Medikamente nachbestellen) as R10
+  (Rechnung erstellen) as R11
+  (Mit Zentralkasse abrechnen) as R12
+  (Verfallene Medikamente erkennen) as R13
+  (Medikamente ausliefern) as R14
+  '(Medikamente empfangen) as R15
+  '(Medikamente bestellen) as R16
+}
+
+Kunde --> R1
+Kunde --> R2
+Kunde --> R3
+Kunde --> R4
+
+Arzt --> R5
+Arzt --> R6
+Arzt --> R7
+Arzthelferin --> R6
+Arzthelferin --> R7
+Apothekenmitarbeiter --> R8
+Apothekenmitarbeiter --> R9
+Apothekenmitarbeiter --> R10
+Apothekenmitarbeiter --> R11
+Apothekenmitarbeiter --> R13
+ Apothekerleiter  --> R10
+Apothekerleiter --> R12
+Apothekerleiter--> R13
+'Kasse --> R12
+Lieferdienst --> R14
+'Patient --> R15
+'Patient --> R16
+R2 --> R9 : <<include>>
+R3 --> R4 : <<extend>>
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml checkout
+actor Benutzer
+participant "Browser" as Web
+participant "<<Controller>>\nCheckoutController" as Controller
+participant "<<Repository>>\nMedicationCatalog" as Catalog
+participant "<<Bean>>\nUniqueInventory" as Inventory
+participant "<<Session Bean>>\nCart" as Cart
+
+Benutzer -> Web : Gibt Barcode + Menge ein,\nklickt "Hinzufügen"
+Web -> Controller : POST /checkout/add (barcode, quantity)
+activate Controller
+
+Controller -> Catalog : findByBarcode(barcode)
+activate Catalog
+Catalog --> Controller : Optional<Medication>
+deactivate Catalog
+
+alt Medikament gefunden
+    Controller -> Inventory : findByProduct(medication)
+    activate Inventory
+    Inventory --> Controller : Streamable<InventoryItem>
+    deactivate Inventory
+
+    Controller -> Controller : getTotalQuantity()
+    Controller -> Controller : Vergleiche Bestand >= quantity
+
+    alt Bestand ausreichend
+        Controller -> Cart : addOrUpdateItem(medication, quantity)
+        activate Cart
+        Cart --> Controller : void
+        deactivate Cart
+        Controller -> Web : redirect:/checkout (mit SuccessMessage)
+    else Bestand nicht ausreichend
+        Controller -> Web : redirect:/checkout (mit ErrorMessage,\n outOfStockProduct)
+    end
+else Medikament nicht gefunden
+    Controller -> Web : redirect:/checkout (mit ErrorMessage)
+end
+
+deactivate Controller
+
+Web -> Controller : GET /checkout
+activate Controller
+Controller -> Cart : getItems(), getPrice() 
+Controller -> Controller : calculateCoPayment() etc. für Model
+Controller --> Web : HTML ("checkout.html")
+deactivate Controller
+Web --> Benutzer : Zeigt aktualisierte Kassenansicht an
+@enduml

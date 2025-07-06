@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	layout:decorate="~{layout}"
+>
+	<head>
+		<title>Kasse</title>
+		<th:block layout:fragment="css">
+			<style>
+				.ui.grid + .grid {
+					margin-top: 0;
+				}
+			</style>
+		</th:block>
+	</head>
+	<body>
+		<section layout:fragment="content">
+			<h1 class="ui header">
+				<span sec:authorize="isAuthenticated()">Kasse</span>
+				<span sec:authorize="isAnonymous()">Selbstbedienungskasse</span>
+			</h1>
+
+			<!-- success error messages -->
+			<div th:if="${successMessage}" class="ui success message">
+				<i class="close icon"></i>
+				<div class="header" th:text="${successMessage}"></div>
+			</div>
+			<div th:if="${errorMessage}" class="ui error message">
+				<i class="close icon"></i>
+				<div class="header" th:text="${errorMessage}"></div>
+			</div>
+			<div th:if="${infoMessage}" class="ui info message">
+				<i class="close icon"></i>
+				<div class="header" th:text="${infoMessage}"></div>
+			</div>
+
+			<div class="ui grid">
+				<div class="ten wide column">
+					<div class="ui segment">
+						<h3 class="ui header">Artikeleingabe</h3>
+						<form class="ui form" th:action="@{/checkout/add}" method="post">
+							<div class="two fields">
+								<div class="twelve wide field">
+									<label>Barcode scannen oder eingeben</label>
+									<input type="text" name="barcode" placeholder="Barcode..." autofocus required />
+								</div>
+								<div class="four wide field">
+									<label>Menge</label>
+									<input type="number" name="quantity" value="1" min="1" step="1" required="required" />
+								</div>
+							</div>
+							<button class="ui icon button primary fluid" type="submit">
+								<i class="plus icon"></i> Hinzufügen
+							</button>
+						</form>
+					</div>
+				</div>
+
+				<div class="six wide column">
+					<div th:replace="~{cart.html :: cart(
+										baseURL='checkout',
+										cart=${checkoutCart},
+										itemAvailableQuantities=${itemAvailableQuantities},
+										itemBackorderQuantities=${itemBackorderQuantities}
+									)}">
+						<p>Warenkorb wird geladen...</p>
+				</div>
+			</div>
+		</section>
+
+		<th:block layout:fragment="scripts">
+			<script>
+				//autofocus on barcode field after loading page
+				document.addEventListener('DOMContentLoaded', (event) => {
+					const barcodeInput = document.getElementById('barcode');
+					if (barcodeInput) {
+						barcodeInput.focus();
+					}
+				});
+			</script>
+		</th:block>
+	</body>
+</html>

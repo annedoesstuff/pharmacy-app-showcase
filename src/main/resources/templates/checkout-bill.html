@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout}"
+>
+	<head>
+		<title>Quittung</title>
+		<th:block layout:fragment="css">
+			<style>
+				#receipt-box {
+					border: 1px dashed grey;
+					padding: 20px;
+					margin-top: 20px;
+					background-color: #f9f9f9;
+					font-family: monospace;
+				}
+				#receipt-box h2 {
+					text-align: center;
+					margin-bottom: 20px;
+				}
+				#receipt-box .line-item {
+					display: flex;
+					justify-content: space-between;
+					margin-bottom: 5px;
+				}
+				#receipt-box .total-line {
+					font-weight: bold;
+					border-top: 1px solid #ccc;
+					padding-top: 10px;
+					margin-top: 10px;
+				}
+			</style>
+		</th:block>
+	</head>
+	<body>
+		<section layout:fragment="content">
+			<h1 class="ui header">Bezahlvorgang abgeschlossen</h1>
+
+			<div class="ui success message">
+				Der Kauf wurde erfolgreich verbucht. Hier ist Ihre Quittung.
+			</div>
+
+			<div th:replace="~{bill.html :: bill}"></div>
+
+			<a th:href="@{/checkout}" class="ui primary button" style="margin-top: 20px">
+				<i class="redo icon"></i> Nächste Kasse / Neuer Vorgang
+			</a>
+		</section>
+	</body>
+</html>

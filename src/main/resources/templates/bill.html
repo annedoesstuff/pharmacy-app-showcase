@@ -1,0 +1,156 @@
+<div id="receipt-box" th:fragment="bill">
+	<style>
+		#receipt-box {
+			border: 1px dashed grey;
+			padding: 20px;
+			margin-top: 20px;
+			background-color: #f9f9f9;
+			font-family: monospace;
+		}
+		#receipt-box h2, #receipt-box h3 {
+			text-align: center;
+			margin-bottom: 15px;
+		}
+		#receipt-box h3.section-title {
+			margin-top: 20px;
+			margin-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 5px;
+			text-align: left;
+		}
+		#receipt-box .line-item {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 5px;
+		}
+		#receipt-box .total-line {
+			font-weight: bold;
+			border-top: 1px solid #ccc;
+			padding-top: 10px;
+			margin-top: 10px;
+		}
+		#receipt-box .sub-total-line {
+			font-weight: bold;
+			padding-top: 5px;
+			margin-top: 5px;
+		}
+		#receipt-box .order-id-info {
+			font-size: 0.9em;
+			color: #333;
+			text-align: left;
+			margin-bottom:10px;
+		}
+		#receipt-box .backorder-notice {
+			color: orange;
+			font-weight: bold;
+			text-align: center;
+			margin-top: 10px;
+		}
+		#receipt-box .lab-order-notice {
+			font-weight: bold;
+			text-align: center;
+			margin-top: 10px;
+		}
+</style>
+
+	<h2>Apotheke Ärztehaus - Beleg</h2>
+
+	<p>
+		Datum:
+		<span th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'dd.MM.yyyy HH:mm:ss')}">Datum</span>
+	</p>
+	<hr />
+
+	<!-- in stock items -->
+	<div th:if="${hasInStockItems}">
+		<h3 class="section-title">Sofort erhaltene Artikel</h3>
+		<p class="order-id-info">Beleg Nr: <span th:text="${billInStockOrderId}">S123</span></p>
+		<div th:each="item : ${billInStockItems}" class="line-item">
+			<span th:text="${item.product.name}">Medikamentname</span>
+			<span>
+				<span th:text="${item.quantity.amount}">1</span>x
+				<span th:text="${{item.product.price}}">5.00 €</span>
+			</span>
+		</div>
+
+		<div class="payment-details">
+			<div th:if="${billPaymentMethod == 'INSURANCE'}">
+				<div class="sub-total-line line-item" th:if="${billInStockCoPayment != null && billInStockCoPayment.number > 0}">
+					<span>Zuzahlung :</span>
+					<span th:text="${{billInStockCoPayment}}">5.00 EUR</span>
+				</div>
+				<div class="sub-total-line line-item" th:if="${billInStockPriceOfNonPrescription != null && billInStockPriceOfNonPrescription.number > 0}">
+					<span>Privatanteil :</span>
+					<span th:text="${{billInStockPriceOfNonPrescription}}">12.50 EUR</span>
+				</div>
+			</div>
+			<div class="sub-total-line line-item" th:if="${hasBackorderItems}">
+				<span>Betrag :</span>
+				<span th:text="${{billInStockTotal}}">17.50 EUR</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- backorder items -->
+	<div th:if="${hasBackorderItems}">
+		<h3 th:if="${margin != null}" class="section-title">Bestellte Rezeptur</h3>
+		<h3 th:if="${margin == null}" class="section-title" style="color: orange;">Nachbestellte Artikel</h3>		<p class="order-id-info">Bestellung Nr: <span th:text="${billBackorderOrderId}">N456</span></p>
+		<div th:each="item : ${billBackorderItems}" class="line-item">
+			<span th:text="${item.product.name}">Medikamentname</span>
+			<span>
+				<span th:text="${item.quantity.amount}">1</span>x
+				<span th:text="${{item.product.price}}">7.00 €</span>
+			</span>
+		</div>
+		<div class="payment-details"> <div th:if="${billPaymentMethod == 'INSURANCE'}"> <div class="sub-total-line line-item" th:if="${billBackorderCoPayment != null && billBackorderCoPayment.number > 0}"> <span>Zuzahlung :</span> <span th:text="${{billBackorderCoPayment}}">5.00 EUR</span> </div>
+			<div class="sub-total-line line-item" th:if="${billBackorderPriceOfNonPrescription != null && billBackorderPriceOfNonPrescription.number > 0}"> <span>Privatanteil :</span> <span th:text="${{billBackorderPriceOfNonPrescription}}">12.50 EUR</span> </div>
+		</div>
+			<div class="sub-total-line line-item">
+				<span>Betrag :</span>
+				<span th:text="${{billBackorderTotal}}">7.00 EUR</span>
+			</div>
+		</div>
+		<p th:if="${margin != null}" class="lab-order-notice">
+			Die Rezepturbestellung ist eingegangen. Bitte bringen Sie diesen Zettel oder die Bestellnummer bei Abholung mit.
+		</p>
+		<p th:if="${margin == null}" class="backorder-notice">
+			Diese Artikel sind voraussichtlich morgen abholbereit. Bitte bringen Sie diesen Zettel oder die Bestellnummer bei Abholung mit.
+		</p>
+	</div>
+
+
+	<hr style="margin-top: 20px;"/>
+
+	<!-- summary -->
+
+		<div th:if="${margin}" class="line-item">
+			<span>Pauschale</span>
+			<span>
+				<span th:text="${margin * 100 + '%'}">10%</span>
+				<span th:text="${{marginAmount}}"></span>
+			</span>
+		</div>
+
+	<hr style="margin-top: 20px;"/>
+
+	<div class="total-line line-item">
+		<span>Gesamtbetrag :</span>
+		<span th:with="
+			zeroBigDecimal=${T(java.math.BigDecimal).ZERO.setScale(2, T(java.math.RoundingMode).HALF_UP)},
+			numInStock=${ (hasInStockItems and billInStockTotal != null) ? billInStockTotal.getNumber().numberValueExact(T(java.math.BigDecimal)) : zeroBigDecimal },
+			numBackorder=${ (hasBackorderItems and billBackorderTotal != null) ? billBackorderTotal.getNumber().numberValueExact(T(java.math.BigDecimal)) : zeroBigDecimal },
+			marginAmount=${ (marginAmount != null and billBackorderCoPayment == null) ? marginAmount.getNumber().numberValueExact(T(java.math.BigDecimal)) : zeroBigDecimal },
+			totalSumBigDecimal=${numInStock.add(numBackorder).add(marginAmount)}"
+			th:text="${#numbers.formatDecimal(totalSumBigDecimal, 1, 'POINT', 2, 'COMMA')} + ' EUR'">
+		</span>
+	</div>
+	<div class="line-item">
+		<span>Zahlungsart :</span>
+		<span th:text="${billPaymentMethod == 'INSURANCE' ? 'KASSE' : billPaymentMethod}">BAR</span>
+	</div>
+
+	<hr />
+	<p style="text-align: center">
+		Vielen Dank für Ihren Einkauf!
+	</p>
+</div>

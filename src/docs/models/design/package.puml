@@ -1,0 +1,40 @@
+@startuml Package Diagram
+
+package pharmacy <<Rectangle>> {
+  package catalog <<Rectangle>> {
+
+  }
+
+  package checkout <<Rectangle>> {
+
+  }
+
+  package lab <<Rectangle>> {
+
+  }
+
+  package checkout <<Rectangle>> {
+    
+  }
+
+  package inventory <<Rectangle>> {
+
+  }
+
+  package user <<Rectangle>> {
+    
+  }
+
+  package personal <<Rectangle>> {
+    
+  }
+
+  personal <. user: <<use>>
+  lab ..> catalog: <<use>>
+  checkout ..> catalog: <<use>>
+  inventory ..> catalog: <<use>>
+  user <.. checkout: <<use>>
+  user <.. lab: <<use>>
+}
+
+@enduml

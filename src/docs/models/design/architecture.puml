@@ -1,0 +1,32 @@
+@startuml Architecture
+
+skinparam packageStyle rectangle
+left to right direction
+
+package Client {
+  rectangle HTML
+  rectangle CSS
+}
+
+package Server {
+  rectangle Thymeleaf
+
+  skinparam packageStyle rectangle
+  package "Application Logic" {
+    package catalog
+    package checkout
+    package inventory
+    package lab
+    package user
+    package personal
+  }
+
+  rectangle "H2 Database"
+
+  Thymeleaf --> "Application Logic"
+  "Application Logic" --> "H2 Database"
+}
+
+Client --> Server
+
+@enduml

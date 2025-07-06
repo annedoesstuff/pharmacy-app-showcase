@@ -1,0 +1,62 @@
+@startuml Inventory-initializer
+
+left to right direction
+
+!define SALESPOINT org.salespointframework
+
+package pharmacy.inventory {
+    class InventoryInitializer <<Component>> {
+
+        - medicationCatalog: MedicationCatalog
+        + InventoryInitializer( MedicationCatalog)
+        + initialize(): void
+    }
+     class InventoryController <<Controller>> {
+                - inventory: MultiInventory<PharmacyInventoryItem>
+                + showFullInventory(Model): String
+            }
+
+     class InventoryService <<Service>> {
+            - inventory: MultiInventory<PharmacyInventoryItem>
+            - orderManagement: PharmacyOrderManagement
+            - medicationCatalog: MedicationCatalog
+            + getReservedQuantity(Product): Quantity
+        }
+
+
+    }
+
+
+
+package pharmacy.catalog {
+    interface MedicationCatalog <<Repository>>
+    class Medication
+}
+
+
+package org.salespointframework {
+    package core {
+        interface DataInitializer
+    }
+
+    package quantity {
+        interface Quantity
+    }
+     package catalog {
+        class Product
+    }
+}
+
+pharmacy.inventory.InventoryInitializer .up.|> SALESPOINT.core.DataInitializer
+pharmacy.inventory.InventoryInitializer ..> pharmacy.catalog.MedicationCatalog : uses >
+
+pharmacy.inventory.InventoryInitializer ..> pharmacy.catalog.Medication : uses >
+pharmacy.inventory.InventoryInitializer ..> SALESPOINT.quantity.Quantity : uses >
+pharmacy.inventory.InventoryService ..> SALESPOINT.catalog.Product : uses >
+
+pharmacy.inventory.InventoryService ..> SALESPOINT.inventory.MultiInventory : uses >
+pharmacy.inventory.InventoryService ..> pharmacy.catalog.MedicationCatalog : uses >
+pharmacy.inventory.InventoryService ..> pharmacy.order.PharmacyOrderManagement : uses >
+pharmacy.inventory.InventoryService ..> SALESPOINT.quantity.Quantity : returns >
+
+@enduml

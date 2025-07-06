@@ -1,0 +1,35 @@
+@startuml Context Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Kontextdiagramm
+
+Person_Ext(customer, "Kunde")
+Person_Ext(doctor, "Arztpraxis")
+
+Enterprise_Boundary(enterprise, "Apotheke") {
+  System_Boundary(system, "Apothekensystem") {
+    System(checkout, "Kassensubsystem", "Verkauf von Waren")
+    System(lab, "Labor", "Herstellung von Mixturen")
+    System(login, "Login und Registrierung", "")
+    System(reports, "Berichte und Abrechnung", "Inventar & Nachbestellung, verfallende Medikamente, Kassenabrechnung, Arztpraxenabrechnung")
+  }
+
+  Person(boss, "Apothekenleiter")
+  Person(employee, "Apothekenmitarbeiter")
+}
+
+Rel(boss, login, "Meldet sich an und verwaltet Personal")
+Rel(employee, login, "Meldet sich an")
+Rel(doctor, login, "Meldet sich an")
+
+Rel(customer, checkout, "Kauft Waren")
+Rel(employee, checkout, "Verkauft Waren")
+Rel(employee, lab, "Stellt Mixturen her")
+
+Rel(boss, reports, "Sieht Berichte ein")
+
+@enduml

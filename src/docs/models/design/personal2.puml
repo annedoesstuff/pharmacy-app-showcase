@@ -1,0 +1,44 @@
+@startuml
+actor Admin
+participant "PesonalController" as PC
+participant "PersonalService" as PS
+participant "UserService" as US
+participant "UserRepository" as UR
+
+== benuzer hinzufügen ==
+Admin -> PC: Hinzufügen eines benuzer
+PC -> PS: createUser(form)
+PS -> UR: Benutzer speichern
+UR --> PS: Benutzer gespeichert
+PS --> PC: Benutzer erstellt
+PC --> Admin: Mitarbeiter oder praxis hinzugefügt
+
+== Benutzer freischalten ==
+Admin -> PC: Benutzer freischalten
+PC -> PS: enableUser(id)
+PS -> UR: Benutzer suchen
+UR --> PS: Benutzer gefunden
+PS -> UR: Benutzer aktivieren
+UR --> PS: Benutzer aktiviert
+PS --> PC: Bestätigung
+PC --> Admin: Benutzer freigeschaltet
+
+== Benutzer deaktivieren ==
+Admin -> PC: Benutzer deaktivieren
+PC -> PS: disableUser(id)
+PS -> UR: Benutzer suchen
+UR --> PS: Benutzer gefunden
+PS -> UR: Benutzer deaktivieren
+UR --> PS: Benutzer deaktiviert
+PS --> PC: Bestätigung
+PC --> Admin: Benutzer deaktiviert
+
+== Benutzer löschen ==
+Admin -> PC: Benutzer löschen
+PC -> PS: deleteById(id)
+PS -> UR: Benutzer löschen
+UR --> PS: Benutzer gelöscht
+PS --> PC: Bestätigung
+PC --> Admin: Benutzer gelöscht
+
+@enduml

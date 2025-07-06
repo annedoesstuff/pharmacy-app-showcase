@@ -1,0 +1,32 @@
+@startuml dialognetz
+
+[*] --> SelfCheckout : Nicht eingeloggt
+
+state SelfCheckout {
+    [*] --> Login : Login-Button
+    Login --> Dashboard : Erfolgreicher Login
+}
+
+state Dashboard {
+    [*] --> Dashboard
+    Dashboard --> Labor: /labor 
+    Dashboard --> Kasse : /checkout
+    Dashboard --> Verwaltung : [wenn Rolle == BOSS]
+    Dashboard --> SelfCheckout : Logout-Button
+    Dashboard --> Inventar : /inventory
+
+    state Labor{
+        [*] --> Laborbestellung : /labor/neu
+        [*] --> Laborliste : /labor/liste
+
+    }
+
+
+    state Verwaltung {
+        [*] --> Berichte : /report
+        [*] --> Benutzerverwaltung : /benutzer
+    }
+
+}
+
+@enduml

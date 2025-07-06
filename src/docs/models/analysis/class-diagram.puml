@@ -1,0 +1,86 @@
+@startuml Class Diagram
+abstract class Order {
+  id: int
+  date: Date
+  paymentMethod: PaymentMethod
+
+  {abstract} generateReceipt(): String
+  generateOrderForm(): String
+  {abstract} calculateTotal(): Money
+}
+
+class LabOrder extends Order {}
+class MedicationOrder extends Order {}
+
+enum PaymentMethod {
+  CASH
+  INSURANCE
+}
+
+class OrderItem {
+  quantity: int
+}
+
+class Medication {
+  barcode: String
+  packaging: String
+  needsPrescription: boolean
+}
+
+MedicationOrder "1" *-- "1..*" OrderItem
+OrderItem "0..*" --> "1" Medication
+
+class MixtureItem {
+  quantity: int
+}
+
+class MixtureIngredient {
+  id: int
+  needsPrescription: boolean
+}
+LabOrder "1" *-- "1..*" MixtureItem
+MixtureItem "0..*" --> "1" MixtureIngredient
+
+class User {
+  id: int
+  name: String
+  userName: String
+  passwordHash: String
+  address: String
+  role: UserRole
+  enabled: boolean
+}
+
+enum UserRole {
+  BOSS
+  EMPLOYEE
+  DOCTORS_OFFICE
+  DELIVERY_DRIVER
+}
+
+User "0..1" - "0..*" Order
+
+set separator ::
+package "org.salespointframework::catalog" <<Frame>> {
+  class Product {
+    name: String
+    price: Money
+  }
+}
+package "org.salespointframework::order" <<Frame>> {
+  class Order {
+    getOrderStatus(): OrderStatus
+  }
+
+  enum OrderStatus {
+    OPEN
+    PAID
+    COMPLETED
+    CANCELED
+  }
+}
+
+Medication --|> Product
+MixtureIngredient --|> Product
+Order --|> org.salespointframework::order::Order
+@enduml
